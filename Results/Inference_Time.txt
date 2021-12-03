@@ -1,0 +1,26 @@
+RTX 3080:
+resnet18            :  Acc: 98.0  :Time: 8.61  :Std: 0.3
+resnet34            :  Acc: 98.4  :Time: 14.6  :Std: 0.33
+resnet50            :  Acc: 98.32  :Time: 27.59  :Std: 0.33
+resnext50           :  Acc: 98.56  :Time: 38.65  :Std: 1.07
+mnasnet1            :  Acc: 97.1  :Time: 5.97  :Std: 0.41
+mobilenet_v2        :  Acc: 98.89  :Time: 10.52  :Std: 0.55
+mobilenet_v3_small  :  Acc: 97.22  :Time: 7.07  :Std: 0.46
+mobilenet_v3_large  :  Acc: 97.79  :Time: 9.04  :Std: 0.52
+densenet121         :  Acc: 98.61  :Time: 37.44  :Std: 0.78
+shufflenet_v2_x0_5  :  Acc: 97.15  :Time: 6.84  :Std: 0.4
+vgg16               :  Acc: 98.42  :Time: 44.37  :Std: 0.83
+squeezenet1_1       :  Acc: 97.43  :Time: 5.72  :Std: 0.41
+GTX 1070:
+resnet18            :  Acc: 98.0  :Time: 29.53  :Std: 1.3
+resnet34            :  Acc: 98.4  :Time: 49.2  :Std: 1.79
+resnet50            :  Acc: 98.32  :Time: 91.85  :Std: 5.82
+resnext50           :  Acc: 98.55  :Time: 126.59  :Std: 5.61
+mnasnet1            :  Acc: 97.1  :Time: 19.23  :Std: 0.8
+mobilenet_v2        :  Acc: 98.89  :Time: 35.69  :Std: 1.14
+mobilenet_v3_small  :  Acc: 97.22  :Time: 10.76  :Std: 0.8
+mobilenet_v3_large  :  Acc: 97.79  :Time: 28.39  :Std: 1.5
+densenet121         :  Acc: 98.61  :Time: 109.13  :Std: 6.29
+shufflenet_v2_x0_5  :  Acc: 97.15  :Time: 13.08  :Std: 1.91
+vgg16               :  Acc: 98.42  :Time: 141.45  :Std: 0.39
+squeezenet1_1       :  Acc: 97.43  :Time: 18.79  :Std: 1.22

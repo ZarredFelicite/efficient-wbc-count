@@ -1,0 +1,357 @@
+ResNet(
+  (conv1): ConvReLU2d(
+    (0): Conv2d(3, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3))
+    (1): ReLU(inplace=True)
+  )
+  (bn1): Identity()
+  (relu): Identity()
+  (maxpool): MaxPool2d(kernel_size=3, stride=2, padding=1, dilation=1, ceil_mode=False)
+  (layer1): Sequential(
+    (0): Bottleneck(
+      (conv1): ConvReLU2d(
+        (0): Conv2d(64, 64, kernel_size=(1, 1), stride=(1, 1))
+        (1): ReLU(inplace=True)
+      )
+      (bn1): Identity()
+      (relu1): Identity()
+      (conv2): ConvReLU2d(
+        (0): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (1): ReLU(inplace=True)
+      )
+      (bn2): Identity()
+      (relu2): Identity()
+      (conv3): Conv2d(64, 256, kernel_size=(1, 1), stride=(1, 1))
+      (bn3): Identity()
+      (downsample): Sequential(
+        (0): Conv2d(64, 256, kernel_size=(1, 1), stride=(1, 1))
+        (1): Identity()
+      )
+      (skip_add): FloatFunctional(
+        (activation_post_process): Identity()
+      )
+      (relu3): ReLU(inplace=True)
+    )
+    (1): Bottleneck(
+      (conv1): ConvReLU2d(
+        (0): Conv2d(256, 64, kernel_size=(1, 1), stride=(1, 1))
+        (1): ReLU(inplace=True)
+      )
+      (bn1): Identity()
+      (relu1): Identity()
+      (conv2): ConvReLU2d(
+        (0): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (1): ReLU(inplace=True)
+      )
+      (bn2): Identity()
+      (relu2): Identity()
+      (conv3): Conv2d(64, 256, kernel_size=(1, 1), stride=(1, 1))
+      (bn3): Identity()
+      (skip_add): FloatFunctional(
+        (activation_post_process): Identity()
+      )
+      (relu3): ReLU(inplace=True)
+    )
+    (2): Bottleneck(
+      (conv1): ConvReLU2d(
+        (0): Conv2d(256, 64, kernel_size=(1, 1), stride=(1, 1))
+        (1): ReLU(inplace=True)
+      )
+      (bn1): Identity()
+      (relu1): Identity()
+      (conv2): ConvReLU2d(
+        (0): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (1): ReLU(inplace=True)
+      )
+      (bn2): Identity()
+      (relu2): Identity()
+      (conv3): Conv2d(64, 256, kernel_size=(1, 1), stride=(1, 1))
+      (bn3): Identity()
+      (skip_add): FloatFunctional(
+        (activation_post_process): Identity()
+      )
+      (relu3): ReLU(inplace=True)
+    )
+  )
+  (layer2): Sequential(
+    (0): Bottleneck(
+      (conv1): ConvReLU2d(
+        (0): Conv2d(256, 128, kernel_size=(1, 1), stride=(1, 1))
+        (1): ReLU(inplace=True)
+      )
+      (bn1): Identity()
+      (relu1): Identity()
+      (conv2): ConvReLU2d(
+        (0): Conv2d(128, 128, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+        (1): ReLU(inplace=True)
+      )
+      (bn2): Identity()
+      (relu2): Identity()
+      (conv3): Conv2d(128, 512, kernel_size=(1, 1), stride=(1, 1))
+      (bn3): Identity()
+      (downsample): Sequential(
+        (0): Conv2d(256, 512, kernel_size=(1, 1), stride=(2, 2))
+        (1): Identity()
+      )
+      (skip_add): FloatFunctional(
+        (activation_post_process): Identity()
+      )
+      (relu3): ReLU(inplace=True)
+    )
+    (1): Bottleneck(
+      (conv1): ConvReLU2d(
+        (0): Conv2d(512, 128, kernel_size=(1, 1), stride=(1, 1))
+        (1): ReLU(inplace=True)
+      )
+      (bn1): Identity()
+      (relu1): Identity()
+      (conv2): ConvReLU2d(
+        (0): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (1): ReLU(inplace=True)
+      )
+      (bn2): Identity()
+      (relu2): Identity()
+      (conv3): Conv2d(128, 512, kernel_size=(1, 1), stride=(1, 1))
+      (bn3): Identity()
+      (skip_add): FloatFunctional(
+        (activation_post_process): Identity()
+      )
+      (relu3): ReLU(inplace=True)
+    )
+    (2): Bottleneck(
+      (conv1): ConvReLU2d(
+        (0): Conv2d(512, 128, kernel_size=(1, 1), stride=(1, 1))
+        (1): ReLU(inplace=True)
+      )
+      (bn1): Identity()
+      (relu1): Identity()
+      (conv2): ConvReLU2d(
+        (0): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (1): ReLU(inplace=True)
+      )
+      (bn2): Identity()
+      (relu2): Identity()
+      (conv3): Conv2d(128, 512, kernel_size=(1, 1), stride=(1, 1))
+      (bn3): Identity()
+      (skip_add): FloatFunctional(
+        (activation_post_process): Identity()
+      )
+      (relu3): ReLU(inplace=True)
+    )
+    (3): Bottleneck(
+      (conv1): ConvReLU2d(
+        (0): Conv2d(512, 128, kernel_size=(1, 1), stride=(1, 1))
+        (1): ReLU(inplace=True)
+      )
+      (bn1): Identity()
+      (relu1): Identity()
+      (conv2): ConvReLU2d(
+        (0): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (1): ReLU(inplace=True)
+      )
+      (bn2): Identity()
+      (relu2): Identity()
+      (conv3): Conv2d(128, 512, kernel_size=(1, 1), stride=(1, 1))
+      (bn3): Identity()
+      (skip_add): FloatFunctional(
+        (activation_post_process): Identity()
+      )
+      (relu3): ReLU(inplace=True)
+    )
+  )
+  (layer3): Sequential(
+    (0): Bottleneck(
+      (conv1): ConvReLU2d(
+        (0): Conv2d(512, 256, kernel_size=(1, 1), stride=(1, 1))
+        (1): ReLU(inplace=True)
+      )
+      (bn1): Identity()
+      (relu1): Identity()
+      (conv2): ConvReLU2d(
+        (0): Conv2d(256, 256, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+        (1): ReLU(inplace=True)
+      )
+      (bn2): Identity()
+      (relu2): Identity()
+      (conv3): Conv2d(256, 1024, kernel_size=(1, 1), stride=(1, 1))
+      (bn3): Identity()
+      (downsample): Sequential(
+        (0): Conv2d(512, 1024, kernel_size=(1, 1), stride=(2, 2))
+        (1): Identity()
+      )
+      (skip_add): FloatFunctional(
+        (activation_post_process): Identity()
+      )
+      (relu3): ReLU(inplace=True)
+    )
+    (1): Bottleneck(
+      (conv1): ConvReLU2d(
+        (0): Conv2d(1024, 256, kernel_size=(1, 1), stride=(1, 1))
+        (1): ReLU(inplace=True)
+      )
+      (bn1): Identity()
+      (relu1): Identity()
+      (conv2): ConvReLU2d(
+        (0): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (1): ReLU(inplace=True)
+      )
+      (bn2): Identity()
+      (relu2): Identity()
+      (conv3): Conv2d(256, 1024, kernel_size=(1, 1), stride=(1, 1))
+      (bn3): Identity()
+      (skip_add): FloatFunctional(
+        (activation_post_process): Identity()
+      )
+      (relu3): ReLU(inplace=True)
+    )
+    (2): Bottleneck(
+      (conv1): ConvReLU2d(
+        (0): Conv2d(1024, 256, kernel_size=(1, 1), stride=(1, 1))
+        (1): ReLU(inplace=True)
+      )
+      (bn1): Identity()
+      (relu1): Identity()
+      (conv2): ConvReLU2d(
+        (0): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (1): ReLU(inplace=True)
+      )
+      (bn2): Identity()
+      (relu2): Identity()
+      (conv3): Conv2d(256, 1024, kernel_size=(1, 1), stride=(1, 1))
+      (bn3): Identity()
+      (skip_add): FloatFunctional(
+        (activation_post_process): Identity()
+      )
+      (relu3): ReLU(inplace=True)
+    )
+    (3): Bottleneck(
+      (conv1): ConvReLU2d(
+        (0): Conv2d(1024, 256, kernel_size=(1, 1), stride=(1, 1))
+        (1): ReLU(inplace=True)
+      )
+      (bn1): Identity()
+      (relu1): Identity()
+      (conv2): ConvReLU2d(
+        (0): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (1): ReLU(inplace=True)
+      )
+      (bn2): Identity()
+      (relu2): Identity()
+      (conv3): Conv2d(256, 1024, kernel_size=(1, 1), stride=(1, 1))
+      (bn3): Identity()
+      (skip_add): FloatFunctional(
+        (activation_post_process): Identity()
+      )
+      (relu3): ReLU(inplace=True)
+    )
+    (4): Bottleneck(
+      (conv1): ConvReLU2d(
+        (0): Conv2d(1024, 256, kernel_size=(1, 1), stride=(1, 1))
+        (1): ReLU(inplace=True)
+      )
+      (bn1): Identity()
+      (relu1): Identity()
+      (conv2): ConvReLU2d(
+        (0): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (1): ReLU(inplace=True)
+      )
+      (bn2): Identity()
+      (relu2): Identity()
+      (conv3): Conv2d(256, 1024, kernel_size=(1, 1), stride=(1, 1))
+      (bn3): Identity()
+      (skip_add): FloatFunctional(
+        (activation_post_process): Identity()
+      )
+      (relu3): ReLU(inplace=True)
+    )
+    (5): Bottleneck(
+      (conv1): ConvReLU2d(
+        (0): Conv2d(1024, 256, kernel_size=(1, 1), stride=(1, 1))
+        (1): ReLU(inplace=True)
+      )
+      (bn1): Identity()
+      (relu1): Identity()
+      (conv2): ConvReLU2d(
+        (0): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (1): ReLU(inplace=True)
+      )
+      (bn2): Identity()
+      (relu2): Identity()
+      (conv3): Conv2d(256, 1024, kernel_size=(1, 1), stride=(1, 1))
+      (bn3): Identity()
+      (skip_add): FloatFunctional(
+        (activation_post_process): Identity()
+      )
+      (relu3): ReLU(inplace=True)
+    )
+  )
+  (layer4): Sequential(
+    (0): Bottleneck(
+      (conv1): ConvReLU2d(
+        (0): Conv2d(1024, 512, kernel_size=(1, 1), stride=(1, 1))
+        (1): ReLU(inplace=True)
+      )
+      (bn1): Identity()
+      (relu1): Identity()
+      (conv2): ConvReLU2d(
+        (0): Conv2d(512, 512, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+        (1): ReLU(inplace=True)
+      )
+      (bn2): Identity()
+      (relu2): Identity()
+      (conv3): Conv2d(512, 2048, kernel_size=(1, 1), stride=(1, 1))
+      (bn3): Identity()
+      (downsample): Sequential(
+        (0): Conv2d(1024, 2048, kernel_size=(1, 1), stride=(2, 2))
+        (1): Identity()
+      )
+      (skip_add): FloatFunctional(
+        (activation_post_process): Identity()
+      )
+      (relu3): ReLU(inplace=True)
+    )
+    (1): Bottleneck(
+      (conv1): ConvReLU2d(
+        (0): Conv2d(2048, 512, kernel_size=(1, 1), stride=(1, 1))
+        (1): ReLU(inplace=True)
+      )
+      (bn1): Identity()
+      (relu1): Identity()
+      (conv2): ConvReLU2d(
+        (0): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (1): ReLU(inplace=True)
+      )
+      (bn2): Identity()
+      (relu2): Identity()
+      (conv3): Conv2d(512, 2048, kernel_size=(1, 1), stride=(1, 1))
+      (bn3): Identity()
+      (skip_add): FloatFunctional(
+        (activation_post_process): Identity()
+      )
+      (relu3): ReLU(inplace=True)
+    )
+    (2): Bottleneck(
+      (conv1): ConvReLU2d(
+        (0): Conv2d(2048, 512, kernel_size=(1, 1), stride=(1, 1))
+        (1): ReLU(inplace=True)
+      )
+      (bn1): Identity()
+      (relu1): Identity()
+      (conv2): ConvReLU2d(
+        (0): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (1): ReLU(inplace=True)
+      )
+      (bn2): Identity()
+      (relu2): Identity()
+      (conv3): Conv2d(512, 2048, kernel_size=(1, 1), stride=(1, 1))
+      (bn3): Identity()
+      (skip_add): FloatFunctional(
+        (activation_post_process): Identity()
+      )
+      (relu3): ReLU(inplace=True)
+    )
+  )
+  (quant): QuantStub()
+  (dequant): DeQuantStub()
+  (avgpool): AdaptiveAvgPool2d(output_size=(1, 1))
+  (fc): Linear(in_features=2048, out_features=5, bias=True)
+)
