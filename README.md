@@ -14,9 +14,9 @@ WBC classified as Neutrophil with 99% confidence.
 #### PTQ & QAT on ResNet18, ResNet34, ResNet50 and MobileNetV2
 ##### ResNet18 Results Summary
 <p float="left">
-<img src="Charts/Section-1-Panel-3-1la8vceuj.png" width="275" alt="Acc"/>
-<img src="Charts/Section-1-Panel-2-i4cwouhu7.png" width="275" alt="F1"/>
-<img src="Charts/Section-3-Panel-1-fy2s98k31.png" width="275" alt="acc_time"/>
+<img src="Charts/Section-1-Panel-3-1la8vceuj.png" width="250" alt="Acc"/>
+<img src="Charts/Section-1-Panel-2-i4cwouhu7.png" width="250" alt="F1"/>
+<img src="Charts/Section-3-Panel-1-fy2s98k31.png" width="250" alt="acc_time"/>
 </p>
 
 Full Results: https://wandb.ai/zarred/Baseline%20Training/reports/PTQ-QAT-Results--VmlldzoxMjY1MDE2
