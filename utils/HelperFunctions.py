@@ -1,6 +1,7 @@
 import numpy as np
 import json
 import matplotlib.pyplot as plt
+from matplotlib.gridspec import GridSpec
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -12,7 +13,14 @@ import torchvision.transforms.functional as tF
 import torchvision.datasets as datasets
 from torch.utils.data import DataLoader as dataloader
 import torchvision.models as models
-from sklearn.metrics import confusion_matrix, accuracy_score, precision_score, recall_score, f1_score, classification_report
+from sklearn.metrics import (
+    confusion_matrix,
+    accuracy_score,
+    precision_score,
+    recall_score,
+    f1_score,
+    classification_report,
+)
 from tqdm import tqdm
 import itertools
 import time
@@ -26,6 +34,8 @@ from randaugment import RandAugmentMC
 import torch.quantization
 from torch.quantization import QuantStub, DeQuantStub
 import wandb
+
+
 # import warnings
 # warnings.filterwarnings(
 #     action='ignore',
@@ -37,18 +47,23 @@ import wandb
 #     module=r'torch.quantization'
 # )
 
+# Global Variables
+classes = ("Basophil", "Eosinophil", "Lymphocyte", "Monocyte", "Neutrophil")
+
+
 def deleter(path):
     for dir in os.listdir(path):
-        newdir = path+"/"+dir
+        newdir = path + "/" + dir
         if os.path.isdir(newdir):
             deleter(newdir)
         else:
             os.remove(newdir)
 
+
 def train_fast(net, device, loader, optimizer, loss_fun, epoch, valid_loss, valid_acc):
     net.train()
     for i, (x, y) in enumerate(loader):
-        
+
         x = x.cuda(device)
         y = y.cuda(device)
 
@@ -60,90 +75,131 @@ def train_fast(net, device, loader, optimizer, loss_fun, epoch, valid_loss, vali
         loss.backward()
         optimizer.step()
 
+
 def calculate_accuracy(fx, y):
     preds = fx.max(1, keepdim=True)[1]
     correct = preds.eq(y.view_as(preds)).sum()
-    acc = correct.float()/preds.shape[0]
+    acc = correct.float() / preds.shape[0]
     return acc
 
-def plot_confusion_matrix(cm, classes, normalize=False, title='Confusion matrix', cmap=plt.cm.Blues):
+
+def plot_confusion_matrix(
+    cm, classes, normalize=False, title="Confusion matrix", cmap=plt.cm.Blues
+):
     if normalize:
-        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+        cm = cm.astype("float") / cm.sum(axis=1)[:, np.newaxis]
         print("Normalized confusion matrix")
     else:
-        print('Confusion matrix, without normalization')
+        print("Confusion matrix, without normalization")
 
     print(cm)
-    plt.imshow(cm, interpolation='nearest', cmap=cmap)
+    plt.imshow(cm, interpolation="nearest", cmap=cmap)
     plt.title(title)
-    #plt.colorbar()
+    # plt.colorbar()
     tick_marks = np.arange(len(classes))
     plt.xticks(tick_marks, classes, rotation=45)
     plt.yticks(tick_marks, classes)
 
-    fmt = '.2f' if normalize else 'd'
-    thresh = cm.max() / 2.
+    fmt = ".2f" if normalize else "d"
+    thresh = cm.max() / 2.0
     for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
-        plt.text(j, i, format(cm[i, j], fmt), horizontalalignment="center", color="white" if cm[i, j] > thresh else "black")
+        plt.text(
+            j,
+            i,
+            format(cm[i, j], fmt),
+            horizontalalignment="center",
+            color="white" if cm[i, j] > thresh else "black",
+        )
 
     plt.tight_layout()
-    plt.ylabel('True label')
-    plt.xlabel('Predicted label')
+    plt.ylabel("True label")
+    plt.xlabel("Predicted label")
 
-def return_cm(cm, classes, normalize=False, title='Confusion matrix', cmap=plt.cm.Blues):
-    plt.figure(figsize=(5,5))
+
+def return_cm(
+    cm, classes, normalize=False, title="Confusion matrix", cmap=plt.cm.Blues
+):
+    plt.figure(figsize=(5, 5))
     if normalize:
-        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
-    plt.imshow(cm, interpolation='nearest', cmap=cmap)
+        cm = cm.astype("float") / cm.sum(axis=1)[:, np.newaxis]
+    plt.imshow(cm, interpolation="nearest", cmap=cmap)
     plt.title(title)
-    #plt.colorbar()
+    # plt.colorbar()
     tick_marks = np.arange(len(classes))
     plt.xticks(tick_marks, classes, rotation=45)
     plt.yticks(tick_marks, classes)
-    fmt = '.2f' if normalize else 'd'
-    thresh = cm.max() / 2.
+    fmt = ".2f" if normalize else "d"
+    thresh = cm.max() / 2.0
     for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
-        plt.text(j, i, format(cm[i, j], fmt), horizontalalignment="center", color="white" if cm[i, j] > thresh else "black")
+        plt.text(
+            j,
+            i,
+            format(cm[i, j], fmt),
+            horizontalalignment="center",
+            color="white" if cm[i, j] > thresh else "black",
+        )
     plt.tight_layout()
-    plt.ylabel('True label')
-    plt.xlabel('Predicted label')
-    save = 'plots/'+title + '.png'
-    plt.savefig(save, bbox_inches='tight')
+    plt.ylabel("True label")
+    plt.xlabel("Predicted label")
+    save = "plots/" + title + ".png"
+    plt.savefig(save, bbox_inches="tight")
     return save
+
 
 def create_model(architecture, device, pretrained=True, freeze=False):
     model = getattr(models, architecture)(pretrained=pretrained).to(device)
-    if architecture in ["resnet18","resnet34","resnet50","resnext50","shufflenet_v2_x0_5",'regnet_x_400mf','regnet_x_800mf','regnet_y_400mf','regnet_y_800mf']:
+    if architecture in [
+        "resnet18",
+        "resnet34",
+        "resnet50",
+        "resnext50",
+        "shufflenet_v2_x0_5",
+        "regnet_x_400mf",
+        "regnet_x_800mf",
+        "regnet_y_400mf",
+        "regnet_y_800mf",
+    ]:
         num_ftrs = model.fc.in_features
         model.fc = nn.Linear(num_ftrs, 5).to(device)
-    elif architecture in ["mnasnet1_0","mobilenet_v2","mobilenet_v3_small","mobilenet_v3_large","vgg16",'efficientnet_b0','efficientnet_b1','efficientnet_b2']:
+    elif architecture in [
+        "mnasnet1_0",
+        "mobilenet_v2",
+        "mobilenet_v3_small",
+        "mobilenet_v3_large",
+        "vgg16",
+        "efficientnet_b0",
+        "efficientnet_b1",
+        "efficientnet_b2",
+    ]:
         num_ftrs = model.classifier[-1].in_features
         model.classifier[-1] = nn.Linear(num_ftrs, 5).to(device)
-    elif architecture=="densenet121":
+    elif architecture == "densenet121":
         num_ftrs = model.classifier.in_features
         model.classifier = nn.Linear(num_ftrs, 5).to(device)
-    elif architecture=="squeezenet1_1":
-        model.classifier[1] = nn.Conv2d(512, 5, kernel_size=(1, 1), stride=(1, 1)).to(device)
+    elif architecture == "squeezenet1_1":
+        model.classifier[1] = nn.Conv2d(512, 5, kernel_size=(1, 1), stride=(1, 1)).to(
+            device
+        )
     if freeze:
-        #Setting all non-classifier layers to frozen
-        for n,m in model.named_children():
-            if n not in ['fc','linear','classifier']:
+        # Setting all non-classifier layers to frozen
+        for n, m in model.named_children():
+            if n not in ["fc", "linear", "classifier"]:
                 for param in m.parameters():
                     param.requires_grad = False
     return model
 
 
-def latency_test(model,device,repetitions,batch_size=1,num_threads=0):
-    #Measure Latency
+def latency_test(model, device, repetitions, batch_size=1, num_threads=0):
+    # Measure Latency
     model.to(device)
     starter = torch.cuda.Event(enable_timing=True)
     ender = torch.cuda.Event(enable_timing=True)
-    elapsed=0
-    timings=np.zeros((repetitions,1))
-    dummy_input = torch.randn(batch_size, 3,64,64, dtype=torch.float).to(device)
+    elapsed = 0
+    timings = np.zeros((repetitions, 1))
+    dummy_input = torch.randn(batch_size, 3, 64, 64, dtype=torch.float).to(device)
     if num_threads != 0:
         torch.set_num_threads(num_threads)
-    #GPU-WARM-UP
+    # GPU-WARM-UP
     for _ in range(10):
         _ = model(dummy_input)
     # MEASURE PERFORMANCE
@@ -153,27 +209,34 @@ def latency_test(model,device,repetitions,batch_size=1,num_threads=0):
             starter.record()
             _ = model(dummy_input)
             ender.record()
-            elapsed += (datetime.datetime.now() - s).total_seconds()*1000
+            elapsed += (datetime.datetime.now() - s).total_seconds() * 1000
             # WAIT FOR GPU SYNC
             torch.cuda.synchronize()
             curr_time = starter.elapsed_time(ender)
             timings[rep] = curr_time
-    time_cpu= (elapsed/repetitions)
+    time_cpu = elapsed / repetitions
     mean_syn = np.sum(timings) / repetitions
     std_syn = np.std(timings)
     return mean_syn, std_syn, time_cpu
 
+
 def size_measure(model):
     torch.save(model.state_dict(), "temp.p")
-    model_size = os.path.getsize("temp.p")/1e6
+    model_size = os.path.getsize("temp.p") / 1e6
     os.remove("temp.p")
     return model_size
 
-def print_measurements(classes,precision,sensitivity,f1,acc,cm,model_size,mean_syn,time_cpu):
+
+def print_measurements(
+    classes, precision, sensitivity, f1, acc, cm, model_size, mean_syn, time_cpu
+):
     print("Performance Metrics:")
-    print("Overall Accuracy: %.2f" %(acc[len(classes)]))
+    print("Overall Accuracy: %.2f" % (acc[len(classes)]))
     for i in range(len(classes)):
-        print("%s: P %6.2f  S %6.2f  F1 %6.2f  A %6.2f" %(classes[i].ljust(11), precision[i], sensitivity[i], f1[i], acc[i]))
+        print(
+            "%s: P %6.2f  S %6.2f  F1 %6.2f  A %6.2f"
+            % (classes[i].ljust(11), precision[i], sensitivity[i], f1[i], acc[i])
+        )
     print(cm)
     print("model size")
     print(model_size)
@@ -182,8 +245,9 @@ def print_measurements(classes,precision,sensitivity,f1,acc,cm,model_size,mean_s
     print("CPU Latency")
     print(time_cpu)
 
-#This function should perform a single evaluation epoch and will be passed our validation or evaluation/test data
-#it WILL NOT be used to train out model
+
+# This function should perform a single evaluation epoch and will be passed our validation or evaluation/test data
+# it WILL NOT be used to train out model
 def eval(model, device, loader, loss_fun, early_stopping):
     model.eval()
     model.to(device)
@@ -195,10 +259,10 @@ def eval(model, device, loader, loss_fun, early_stopping):
         fx = model(x)
         loss = loss_fun(fx, y)
         acc = calculate_accuracy(fx, y)
-        
+
         epoch_loss += loss.item()
         epoch_acc += acc.item()
-            
+
     av_loss = epoch_loss / len(loader)
     av_acc = epoch_acc / len(loader)
     early_stopping(av_loss, model)
@@ -206,13 +270,16 @@ def eval(model, device, loader, loss_fun, early_stopping):
         print("Early stopping")
         early = True
     else:
-        early = False      
+        early = False
     return av_loss, av_acc, early
 
-def evaluate(model, device, loader, batch_size, loss_fun, labels_index=None, metrics=[1,1,1,1]):
+
+def evaluate(
+    model, device, loader, batch_size, loss_fun, labels_index=None, metrics=[1, 1, 1, 1]
+):
     epoch_loss = 0
     epoch_acc = 0
-    length = len(loader)*batch_size
+    length = len(loader) * batch_size
     batch_preds = torch.empty((length))
     batch_labels = torch.empty((length))
 
@@ -220,91 +287,140 @@ def evaluate(model, device, loader, batch_size, loss_fun, labels_index=None, met
 
     with torch.no_grad():
         for i, (x, y) in enumerate(loader):
-            
-            #load images and labels to device
+
+            # load images and labels to device
             x = x.to(device)
             y = y.to(device)
-            #model pass-through
+            # model pass-through
             fx = model(x)
-            #loss calculation
+            # loss calculation
             loss = loss_fun(fx, y)
-            #Get class predictions
+            # Get class predictions
             prediction = fx.max(1, keepdim=True)[1].cpu()
             labels = y.cpu()
-            #Add to tensor containing all batch predictions and labels
-            batch_preds[i*batch_size:(i+1)*batch_size] = torch.squeeze(prediction)
-            batch_labels[i*batch_size:(i+1)*batch_size] = labels
-            #Accumulate loss and accuracy
+            # Add to tensor containing all batch predictions and labels
+            batch_preds[i * batch_size : (i + 1) * batch_size] = torch.squeeze(
+                prediction
+            )
+            batch_labels[i * batch_size : (i + 1) * batch_size] = labels
+            # Accumulate loss and accuracy
             epoch_loss += loss.item()
-    #print("EVALUATION: | Itteration [%d/%d] | Loss %.2f |" %(i+1 ,len(loader), loss.item(), ))
+    # print("EVALUATION: | Itteration [%d/%d] | Loss %.2f |" %(i+1 ,len(loader), loss.item(), ))
 
-    classes = ('Basophil','Eosinophil','Lymphocyte','Monocyte','Neutrophil')
-    cm = confusion_matrix(batch_labels,batch_preds,labels=labels_index)
+    classes = ("Basophil", "Eosinophil", "Lymphocyte", "Monocyte", "Neutrophil")
+    cm = confusion_matrix(batch_labels, batch_preds, labels=labels_index)
     print(cm)
-    tp = np.sum(np.identity(len(classes))*cm, axis=0)
-    fn = np.sum(np.bitwise_xor(np.identity(len(classes), dtype=int),np.ones(len(classes), dtype=int))*cm, axis=1)
-    fp = np.sum(np.bitwise_xor(np.identity(len(classes), dtype=int),np.ones(len(classes), dtype=int))*cm, axis=0)
-    tn = np.repeat(np.sum(np.sum(cm, axis=1)),len(classes))- tp - fn - fp
+    tp = np.sum(np.identity(len(classes)) * cm, axis=0)
+    fn = np.sum(
+        np.bitwise_xor(
+            np.identity(len(classes), dtype=int), np.ones(len(classes), dtype=int)
+        )
+        * cm,
+        axis=1,
+    )
+    fp = np.sum(
+        np.bitwise_xor(
+            np.identity(len(classes), dtype=int), np.ones(len(classes), dtype=int)
+        )
+        * cm,
+        axis=0,
+    )
+    tn = np.repeat(np.sum(np.sum(cm, axis=1)), len(classes)) - tp - fn - fp
     if metrics[3]:
-        precision = np.divide(tp, (tp+fp), out=np.zeros_like(tp), where=(tp+fp)!=0)*100
+        precision = (
+            np.divide(tp, (tp + fp), out=np.zeros_like(tp), where=(tp + fp) != 0) * 100
+        )
     else:
         precision = np.zeros_like(classes)
     if metrics[2]:
-        sensitivity = np.divide(tp, (tp+fn), out=np.zeros_like(tp), where=(tp+fn)!=0)*100
+        sensitivity = (
+            np.divide(tp, (tp + fn), out=np.zeros_like(tp), where=(tp + fn) != 0) * 100
+        )
     else:
         sensitivity = np.zeros_like(classes)
     if metrics[1]:
-        a = np.multiply(precision,sensitivity)
-        b = (precision+sensitivity)
-        f1 = 2*np.divide(a, b, out=np.zeros_like(a), where=b!=0)
+        a = np.multiply(precision, sensitivity)
+        b = precision + sensitivity
+        f1 = 2 * np.divide(a, b, out=np.zeros_like(a), where=b != 0)
     else:
         f1 = np.zeros_like(classes)
     if metrics[0]:
-        a = (tp+tn)
-        b = (tp+fp+tn+fn)
-        acc = np.divide(a, b,  out=np.zeros_like(a), where=b!=0)*100
-        acc = np.append(acc, np.divide(np.sum(a), np.sum(b), out=np.zeros_like(np.sum(a)), where=np.sum(b)!=0)*100)
+        a = tp + tn
+        b = tp + fp + tn + fn
+        acc = np.divide(a, b, out=np.zeros_like(a), where=b != 0) * 100
+        acc = np.append(
+            acc,
+            np.divide(
+                np.sum(a), np.sum(b), out=np.zeros_like(np.sum(a)), where=np.sum(b) != 0
+            )
+            * 100,
+        )
     else:
-        acc = np.zeros((1, len(classes)+1))
-    #plt.figure(figsize=(5,5))
-    #plot_confusion_matrix(cm, classes, title=('Confusion Matrix: ' + model_name))
+        acc = np.zeros((1, len(classes) + 1))
+    # plt.figure(figsize=(5,5))
+    # plot_confusion_matrix(cm, classes, title=('Confusion Matrix: ' + model_name))
     return precision, sensitivity, f1, acc, cm
 
-def evaluate2(model, device, loader, batch_size, loss_fun, labels_indx, names, sample_weight=None):
+
+def evaluate2(
+    model, device, loader, batch_size, loss_fun, labels_indx, names, sample_weight=None
+):
     epoch_loss = 0
     epoch_acc = 0
-    length = len(loader)*batch_size
+    length = len(loader) * batch_size
     batch_preds = torch.empty((length))
     batch_labels = torch.empty((length))
 
     model.eval()
     for i, (x, y) in enumerate(loader):
-        
-        #load images and labels to device
+
+        # load images and labels to device
         x = x.to(device)
         y = y.to(device)
-        #model pass-through
+        # model pass-through
         fx = model(x)
-        #loss calculation
+        # loss calculation
         loss = loss_fun(fx, y)
-        #Get class predictions
+        # Get class predictions
         prediction = fx.max(1, keepdim=True)[1].cpu()
         labels = y.cpu()
-        #Add to tensor containing all batch predictions and labels
-        batch_preds[i*batch_size:(i+1)*batch_size] = torch.squeeze(prediction)
-        batch_labels[i*batch_size:(i+1)*batch_size] = labels
-        #Accumulate loss and accuracy
+        # Add to tensor containing all batch predictions and labels
+        batch_preds[i * batch_size : (i + 1) * batch_size] = torch.squeeze(prediction)
+        batch_labels[i * batch_size : (i + 1) * batch_size] = labels
+        # Accumulate loss and accuracy
         epoch_loss += loss.item()
-    cm = confusion_matrix(batch_labels,batch_preds,labels=labels_indx)
-    results = classification_report(batch_labels, batch_preds, labels=labels_indx, target_names=names, sample_weight=sample_weight, digits=2, output_dict=True, zero_division=0)
-    wandb.log({"conf_mat" : wandb.plot.confusion_matrix(probs=None, y_true=batch_labels.numpy(), preds=batch_preds.numpy(), class_names=names)})
-    #print(results)
-    #return precision, sensitivity, f1, acc, cm
+    cm = confusion_matrix(batch_labels, batch_preds, labels=labels_indx)
+    results = classification_report(
+        batch_labels,
+        batch_preds,
+        labels=labels_indx,
+        target_names=names,
+        sample_weight=sample_weight,
+        digits=2,
+        output_dict=True,
+        zero_division=0,
+    )
+    wandb.log(
+        {
+            "conf_mat": wandb.plot.confusion_matrix(
+                probs=None,
+                y_true=batch_labels.numpy(),
+                preds=batch_preds.numpy(),
+                class_names=names,
+            )
+        }
+    )
+    # print(results)
+    # return precision, sensitivity, f1, acc, cm
     return results, cm
+
 
 class EarlyStopping:
     """Early stops the training if validation loss doesn't improve after a given patience."""
-    def __init__(self, patience=7, verbose=False, delta=0, path='checkpoint.pt', trace_func=print):
+
+    def __init__(
+        self, patience=7, verbose=False, delta=0, path="checkpoint.pt", trace_func=print
+    ):
         """
         Args:
             patience (int): How long to wait after last time validation loss improved.
@@ -327,6 +443,7 @@ class EarlyStopping:
         self.delta = delta
         self.path = path
         self.trace_func = trace_func
+
     def __call__(self, val_loss, model):
 
         score = -val_loss
@@ -336,7 +453,9 @@ class EarlyStopping:
             self.save_checkpoint(val_loss, model)
         elif score < self.best_score + self.delta:
             self.counter += 1
-            self.trace_func(f'EarlyStopping counter: {self.counter} out of {self.patience}')
+            self.trace_func(
+                f"EarlyStopping counter: {self.counter} out of {self.patience}"
+            )
             if self.counter >= self.patience:
                 self.early_stop = True
         else:
@@ -345,56 +464,87 @@ class EarlyStopping:
             self.counter = 0
 
     def save_checkpoint(self, val_loss, model):
-        '''Saves model when validation loss decrease.'''
+        """Saves model when validation loss decrease."""
         if self.verbose:
-            self.trace_func(f'Validation loss decreased ({self.val_loss_min:.6f} --> {val_loss:.6f}).  Saving model ...')
-        torch.save({
-        'model_state_dict':      model.state_dict(),
-        #'optimizer_state_dict':  optimizer.state_dict(), 
-        #'train_acc':             train_acc,
-        #'valid_acc':             valid_acc,
-        #'test_acc':              acc[len(classes)],
-    }, self.path)
+            self.trace_func(
+                f"Validation loss decreased ({self.val_loss_min:.6f} --> {val_loss:.6f}).  Saving model ..."
+            )
+        torch.save(
+            {
+                "model_state_dict": model.state_dict(),
+                #'optimizer_state_dict':  optimizer.state_dict(),
+                #'train_acc':             train_acc,
+                #'valid_acc':             valid_acc,
+                #'test_acc':              acc[len(classes)],
+            },
+            self.path,
+        )
         self.val_loss_min = val_loss
+
 
 class SquarePad:
     def __call__(self, image, max_wh):
-        #max_wh = max(image.size)
+        # max_wh = max(image.size)
         p_left, p_top = [(max_wh - s) // 2 for s in image.size]
-        p_right, p_bottom = [max_wh - (s+pad) for s, pad in zip(image.size, [p_left, p_top])]
+        p_right, p_bottom = [
+            max_wh - (s + pad) for s, pad in zip(image.size, [p_left, p_top])
+        ]
         padding = (p_left, p_top, p_right, p_bottom)
-        return tF.pad(image, padding, 0, 'constant')
+        return tF.pad(image, padding, 0, "constant")
+
 
 def model_fusion(model, architecture):
     # Fuse the model in place rather manually.
-    if architecture=="resnet50":
-        model = torch.quantization.fuse_modules(model, [["conv1", "bn1", "relu"]], inplace=True)
+    if architecture == "resnet50":
+        model = torch.quantization.fuse_modules(
+            model, [["conv1", "bn1", "relu"]], inplace=True
+        )
         for module_name, module in model.named_children():
             if "layer" in module_name:
                 for basic_block_name, basic_block in module.named_children():
-                    torch.quantization.fuse_modules(basic_block, [["conv1", "bn1", "relu1"],["conv2", "bn2", "relu2"], ["conv3", "bn3"]], inplace=True)
+                    torch.quantization.fuse_modules(
+                        basic_block,
+                        [
+                            ["conv1", "bn1", "relu1"],
+                            ["conv2", "bn2", "relu2"],
+                            ["conv3", "bn3"],
+                        ],
+                        inplace=True,
+                    )
                     for sub_block_name, sub_block in basic_block.named_children():
                         if sub_block_name == "downsample":
-                            torch.quantization.fuse_modules(sub_block, [["0", "1"]], inplace=True)
+                            torch.quantization.fuse_modules(
+                                sub_block, [["0", "1"]], inplace=True
+                            )
     else:
-        model = torch.quantization.fuse_modules(model, [["conv1", "bn1", "relu"]], inplace=True)
+        model = torch.quantization.fuse_modules(
+            model, [["conv1", "bn1", "relu"]], inplace=True
+        )
         for module_name, module in model.named_children():
             if "layer" in module_name:
                 for basic_block_name, basic_block in module.named_children():
-                    torch.quantization.fuse_modules(basic_block, [["conv1", "bn1", "relu1"], ["conv2", "bn2"]], inplace=True)
+                    torch.quantization.fuse_modules(
+                        basic_block,
+                        [["conv1", "bn1", "relu1"], ["conv2", "bn2"]],
+                        inplace=True,
+                    )
                     for sub_block_name, sub_block in basic_block.named_children():
                         if sub_block_name == "downsample":
-                            torch.quantization.fuse_modules(sub_block, [["0", "1"]], inplace=True)
+                            torch.quantization.fuse_modules(
+                                sub_block, [["0", "1"]], inplace=True
+                            )
     return model
+
 
 def fusion_regnet(model):
     for n, m in model.named_children():
-        if n in ['a','b']:
+        if n in ["a", "b"]:
             torch.quantization.fuse_modules(m, ["0", "1", "2"], inplace=True)
-        if n in ['c']:
+        if n in ["c"]:
             torch.quantization.fuse_modules(m, ["0", "1"], inplace=True)
         fusion_regnet(m)
     return model
+
 
 def save_torchscript_model(model, model_dir, model_filename):
 
@@ -403,32 +553,35 @@ def save_torchscript_model(model, model_dir, model_filename):
     model_filepath = os.path.join(model_dir, model_filename)
     torch.jit.save(torch.jit.script(model), model_filepath)
 
-def visualise_data(data_loader,classes, std=0, mean=0):
-    plt.figure(figsize = (20,10))
+
+def visualise_data(data_loader, classes, std=0, mean=0):
+    plt.figure(figsize=(20, 10))
     images, labels = next(iter(data_loader))
     out = torchvision.utils.make_grid(images[0:8])
     out = out.numpy().transpose((1, 2, 0))
     if mean:
-        out_pre = out*np.array(std) + np.array(mean)
-        img1 = plt.imshow(np.clip(out_pre,0,1))
+        out_pre = out * np.array(std) + np.array(mean)
+        img1 = plt.imshow(np.clip(out_pre, 0, 1))
         plt.show()
-    
+
     out_aug = out
-    plt.figure(figsize = (20,10))
+    plt.figure(figsize=(20, 10))
     plt.title([classes[x] for x in labels[:8].numpy()])
-    img2 = plt.imshow(np.clip(out_aug,0,1))
+    img2 = plt.imshow(np.clip(out_aug, 0, 1))
     plt.show()
 
+
 def getStats(img_dir, samples):
-    mean_sum = [0,0,0]  
-    std_sum = [0,0,0]
-    for img in random.choices(os.listdir(img_dir),k=samples):
-        data = Image.open(img_dir+img)
-        mean_sum += np.mean(np.array(data)/255, axis=(0,1))
-        std_sum += np.std(np.array(data)/255, axis=(0,1))
-    mean_sum/=samples
-    std_sum/=samples
+    mean_sum = [0, 0, 0]
+    std_sum = [0, 0, 0]
+    for img in random.choices(os.listdir(img_dir), k=samples):
+        data = Image.open(img_dir + img)
+        mean_sum += np.mean(np.array(data) / 255, axis=(0, 1))
+        std_sum += np.std(np.array(data) / 255, axis=(0, 1))
+    mean_sum /= samples
+    std_sum /= samples
     return mean_sum, std_sum
+
 
 class CustomRegNet(nn.Module):
     def __init__(self, pretrained=True):
@@ -439,10 +592,10 @@ class CustomRegNet(nn.Module):
         self.trunk_output = nn.ModuleList(base.children())[1]
         self.avgpool = nn.ModuleList(base.children())[2]
         torchvision.models.mobilenet_v3_small()
-        #self.features = nn.Sequential(*self.features)
-        #self.features.extend(nn.ModuleList(base.children())[1])
-        #in_features = base.fc.in_features
-        #self.fc = nn.Linear(in_features, 5)
+        # self.features = nn.Sequential(*self.features)
+        # self.features.extend(nn.ModuleList(base.children())[1])
+        # in_features = base.fc.in_features
+        # self.fc = nn.Linear(in_features, 5)
         self.fc = base.fc
         self.quant = QuantStub()
         self.dequant = DeQuantStub()
@@ -451,16 +604,16 @@ class CustomRegNet(nn.Module):
     #     for m in self.modules():
     #         print(m)
     #         print('***************************************')
-            # if type(m) == SimpleStemIN:
-            #     torch.quantization.fuse_modules(m, ['0', '1', '2'], inplace=True)
-            # if type(m) == ConvNormActivation:
-            #     torch.quantization.fuse_modules(m, ['0', '1'], inplace=True)
-            # if type(m) == SimpleStemIN:
-            #     torch.quantization.fuse_modules(m, ['0', '1', '2'], inplace=True)
-            # if type(m) == SimpleStemIN:
-            #     torch.quantization.fuse_modules(m, ['0', '1', '2'], inplace=True)
-            # if type(m) == SimpleStemIN:
-            #     torch.quantization.fuse_modules(m, ['0', '1', '2'], inplace=True)
+    # if type(m) == SimpleStemIN:
+    #     torch.quantization.fuse_modules(m, ['0', '1', '2'], inplace=True)
+    # if type(m) == ConvNormActivation:
+    #     torch.quantization.fuse_modules(m, ['0', '1'], inplace=True)
+    # if type(m) == SimpleStemIN:
+    #     torch.quantization.fuse_modules(m, ['0', '1', '2'], inplace=True)
+    # if type(m) == SimpleStemIN:
+    #     torch.quantization.fuse_modules(m, ['0', '1', '2'], inplace=True)
+    # if type(m) == SimpleStemIN:
+    #     torch.quantization.fuse_modules(m, ['0', '1', '2'], inplace=True)
 
     # Set your own forward pass
     def forward(self, x):
@@ -473,35 +626,77 @@ class CustomRegNet(nn.Module):
         x = self.dequant(x)
 
         return x
-def datamaker(colour,config):
-    ##########################################################
-    #DATA PREPARATION
-    ##########################################################
-    transform = transforms.Compose([
-                RandAugmentMC(n=config['transforms']['n'], m=config['transforms']['m']),
-                transforms.ToTensor()
-    ])
-    transform_test = transforms.Compose([
-                transforms.ToTensor()
-    ])
 
 
-    train_data = datasets.ImageFolder(config['data_path']+colour+'/train', transform=transform)
-    valid_data = datasets.ImageFolder(config['data_path']+colour+'/val', transform=transform_test)
-    test_data = datasets.ImageFolder(config['data_path'] + colour + '/test', transform=transform_test)
+def datamaker(colour, config):
+    ##########################################################
+    # DATA PREPARATION
+    ##########################################################
+    transform = transforms.Compose(
+        [
+            RandAugmentMC(n=config["transforms"]["n"], m=config["transforms"]["m"]),
+            transforms.ToTensor(),
+        ]
+    )
+    transform_test = transforms.Compose([transforms.ToTensor()])
+
+    train_data = datasets.ImageFolder(
+        config["data_path"] + colour + "/train", transform=transform
+    )
+    valid_data = datasets.ImageFolder(
+        config["data_path"] + colour + "/val", transform=transform_test
+    )
+    test_data = datasets.ImageFolder(
+        config["data_path"] + colour + "/test", transform=transform_test
+    )
     validation_split = 0.9
     n_train_examples = int(len(train_data))
     n_valid_examples = len(valid_data)
     n_test_examples = len(test_data)
-    train_loader = dataloader(train_data, shuffle=True, batch_size=config['batch_size'], num_workers=config['num_workers'], pin_memory=True, drop_last=True, persistent_workers=True)
-    valid_loader = dataloader(valid_data, batch_size=config['valid_batch_size'], num_workers=config['num_workers'], pin_memory=True, drop_last=True, persistent_workers=True)
-    test_loader = dataloader(test_data, batch_size=config['valid_batch_size'], num_workers=config['num_workers'], pin_memory=True, drop_last=True, persistent_workers=True)
-    config['train_size'] = n_train_examples
-    config['val_size'] = n_valid_examples
-    print("Train samples: {}    Batch size: {}".format(n_train_examples, len(train_loader)))
-    print("Validation samples: {}     Batch size: {}".format(n_valid_examples,len(valid_loader)))
-    print("Testing samples: {}     Batch size: {}".format(n_test_examples,len(test_loader)))
+    train_loader = dataloader(
+        train_data,
+        shuffle=True,
+        batch_size=config["batch_size"],
+        num_workers=config["num_workers"],
+        pin_memory=True,
+        drop_last=True,
+        persistent_workers=True,
+    )
+    valid_loader = dataloader(
+        valid_data,
+        batch_size=config["valid_batch_size"],
+        num_workers=config["num_workers"],
+        pin_memory=True,
+        drop_last=True,
+        persistent_workers=True,
+    )
+    test_loader = dataloader(
+        test_data,
+        batch_size=config["valid_batch_size"],
+        num_workers=config["num_workers"],
+        pin_memory=True,
+        drop_last=True,
+        persistent_workers=True,
+    )
+    config["train_size"] = n_train_examples
+    config["val_size"] = n_valid_examples
+    print(
+        "Train samples: {}    Batch size: {}".format(
+            n_train_examples, len(train_loader)
+        )
+    )
+    print(
+        "Validation samples: {}     Batch size: {}".format(
+            n_valid_examples, len(valid_loader)
+        )
+    )
+    print(
+        "Testing samples: {}     Batch size: {}".format(
+            n_test_examples, len(test_loader)
+        )
+    )
     return train_loader, valid_loader, test_loader, test_data
+
 
 def _make_divisible(v, divisor, min_value=None):
     """
@@ -527,10 +722,18 @@ class ConvBNReLU(nn.Sequential):
     def __init__(self, in_planes, out_planes, kernel_size=3, stride=1, groups=1):
         padding = (kernel_size - 1) // 2
         super(ConvBNReLU, self).__init__(
-            nn.Conv2d(in_planes, out_planes, kernel_size, stride, padding, groups=groups, bias=False),
+            nn.Conv2d(
+                in_planes,
+                out_planes,
+                kernel_size,
+                stride,
+                padding,
+                groups=groups,
+                bias=False,
+            ),
             nn.BatchNorm2d(out_planes, momentum=0.1),
             # Replace with ReLU
-            nn.ReLU(inplace=False)
+            nn.ReLU(inplace=False),
         )
 
 
@@ -547,13 +750,15 @@ class InvertedResidual(nn.Module):
         if expand_ratio != 1:
             # pw
             layers.append(ConvBNReLU(inp, hidden_dim, kernel_size=1))
-        layers.extend([
-            # dw
-            ConvBNReLU(hidden_dim, hidden_dim, stride=stride, groups=hidden_dim),
-            # pw-linear
-            nn.Conv2d(hidden_dim, oup, 1, 1, 0, bias=False),
-            nn.BatchNorm2d(oup, momentum=0.1),
-        ])
+        layers.extend(
+            [
+                # dw
+                ConvBNReLU(hidden_dim, hidden_dim, stride=stride, groups=hidden_dim),
+                # pw-linear
+                nn.Conv2d(hidden_dim, oup, 1, 1, 0, bias=False),
+                nn.BatchNorm2d(oup, momentum=0.1),
+            ]
+        )
         self.conv = nn.Sequential(*layers)
         # Replace torch.add with floatfunctional
         self.skip_add = nn.quantized.FloatFunctional()
@@ -566,7 +771,13 @@ class InvertedResidual(nn.Module):
 
 
 class MobileNetV2(nn.Module):
-    def __init__(self, num_classes=1000, width_mult=1.0, inverted_residual_setting=None, round_nearest=8):
+    def __init__(
+        self,
+        num_classes=1000,
+        width_mult=1.0,
+        inverted_residual_setting=None,
+        round_nearest=8,
+    ):
         """
         MobileNet V2 main class
         Args:
@@ -594,20 +805,29 @@ class MobileNetV2(nn.Module):
             ]
 
         # only check the first element, assuming user knows t,c,n,s are required
-        if len(inverted_residual_setting) == 0 or len(inverted_residual_setting[0]) != 4:
-            raise ValueError("inverted_residual_setting should be non-empty "
-                             "or a 4-element list, got {}".format(inverted_residual_setting))
+        if (
+            len(inverted_residual_setting) == 0
+            or len(inverted_residual_setting[0]) != 4
+        ):
+            raise ValueError(
+                "inverted_residual_setting should be non-empty "
+                "or a 4-element list, got {}".format(inverted_residual_setting)
+            )
 
         # building first layer
         input_channel = _make_divisible(input_channel * width_mult, round_nearest)
-        self.last_channel = _make_divisible(last_channel * max(1.0, width_mult), round_nearest)
+        self.last_channel = _make_divisible(
+            last_channel * max(1.0, width_mult), round_nearest
+        )
         features = [ConvBNReLU(3, input_channel, stride=2)]
         # building inverted residual blocks
         for t, c, n, s in inverted_residual_setting:
             output_channel = _make_divisible(c * width_mult, round_nearest)
             for i in range(n):
                 stride = s if i == 0 else 1
-                features.append(block(input_channel, output_channel, stride, expand_ratio=t))
+                features.append(
+                    block(input_channel, output_channel, stride, expand_ratio=t)
+                )
                 input_channel = output_channel
         # building last several layers
         features.append(ConvBNReLU(input_channel, self.last_channel, kernel_size=1))
@@ -617,14 +837,13 @@ class MobileNetV2(nn.Module):
         self.dequant = DeQuantStub()
         # building classifier
         self.classifier = nn.Sequential(
-            nn.Dropout(0.2),
-            nn.Linear(self.last_channel, num_classes),
+            nn.Dropout(0.2), nn.Linear(self.last_channel, num_classes),
         )
 
         # weight initialization
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
-                nn.init.kaiming_normal_(m.weight, mode='fan_out')
+                nn.init.kaiming_normal_(m.weight, mode="fan_out")
                 if m.bias is not None:
                     nn.init.zeros_(m.bias)
             elif isinstance(m, nn.BatchNorm2d):
@@ -649,19 +868,25 @@ class MobileNetV2(nn.Module):
     def fuse_model(self):
         for m in self.modules():
             if type(m) == ConvBNReLU:
-                torch.quantization.fuse_modules(m, ['0', '1', '2'], inplace=True)
+                torch.quantization.fuse_modules(m, ["0", "1", "2"], inplace=True)
             if type(m) == InvertedResidual:
                 for idx in range(len(m.conv)):
                     if type(m.conv[idx]) == nn.Conv2d:
-                        torch.quantization.fuse_modules(m.conv, [str(idx), str(idx + 1)], inplace=True)
+                        torch.quantization.fuse_modules(
+                            m.conv, [str(idx), str(idx + 1)], inplace=True
+                        )
+
+
 def onnx_export(model, loader, config):
-    #Export model to ONNX
+    # Export model to ONNX
     images, _ = next(iter(train_loader))
     images = images.cpu()
-    onnx_file = config['architecture'] + config['save_suffix'] + '.onnx'
+    onnx_file = config["architecture"] + config["save_suffix"] + ".onnx"
     torch.onnx.export(model, images, onnx_file)
     wandb.save(onnx_file)
-#Archive
+
+
+# Archive
 ##################
 # with open("model_names.txt", "r") as f:
 #     architecture_list = []
