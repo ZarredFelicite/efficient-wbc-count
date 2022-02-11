@@ -1,7 +1,7 @@
 # White Blood Cell Detection & Classification
 
 ## Classification
-placeholder discription
+placeholder description
 
 **Network saliency visualisation for ResNet18**
 <img src="Media/saliency_vis.png" width="900" alt="saliency" />
