@@ -1,0 +1,6 @@
+"Name","bit_width","_wandb","Results.accuracy"
+"mobilenet_v2_Purple","32","","0.9110576923076924"
+"mobilenet_v2_Purple","16","","0.9122596153846154"
+"mobilenet_v2_Purple","8","","0.8413461538461539"
+"mobilenet_v2_Purple","6","","0.6213942307692307"
+"mobilenet_v2_Purple","4","","0.5973557692307693"

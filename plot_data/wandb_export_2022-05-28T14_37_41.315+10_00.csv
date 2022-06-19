@@ -1,0 +1,6 @@
+"Name","bit_width","_wandb","Results.accuracy"
+"resnet18_Purple","32","","0.9098557692307692"
+"resnet18_Purple","16","","0.9098557692307692"
+"resnet18_Purple","8","","0.90625"
+"resnet18_Purple","6","","0.8305288461538461"
+"resnet18_Purple","4","","0.4459134615384616"

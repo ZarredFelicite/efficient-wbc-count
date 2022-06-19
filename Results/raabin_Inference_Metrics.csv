@@ -1,0 +1,41 @@
+Description,Model,Acc,Time reg,Time sync,Std,Acc/Time,Model Size,Batch Size,Image Size,Device Name,Notes,File Name,,,,,,,,,,,,,,,,,,,,,,,,,
+Baseline,resnet18,98,4.1,8.8,0.4,11.14,44.79,32,64,NVIDIA GeForce RTX 3080,Models may not have converged optimally,,89,0,0,0,0,0,319,1,0,2,0,4,1015,12,3,1,2,10,217,4,0,122,12,41,2434
+Baseline,resnet34,98.4,6.72,14.68,0.52,6.7,85.29,32,64,NVIDIA GeForce RTX 3080,Models may not have converged optimally,,89,0,0,0,0,0,315,1,0,6,0,0,1026,6,2,0,2,20,206,6,0,100,14,14,2481
+Baseline,resnet50,98.32,10.82,28.34,0.97,3.47,94.39,32,64,NVIDIA GeForce RTX 3080,Models may not have converged optimally,,89,0,0,0,0,0,316,1,1,4,0,0,1019,10,5,1,2,12,212,7,0,107,13,17,2472
+Baseline,resnext50,98.56,13.71,37.78,0.85,2.61,92.34,32,64,NVIDIA GeForce RTX 3080,Models may not have converged optimally,,89,0,0,0,0,0,319,1,0,2,0,1,1015,16,2,0,0,7,222,5,0,93,8,19,2489
+Baseline,mnasnet1,97.1,6.91,6.88,0.41,14.11,3.96,32,64,NVIDIA GeForce RTX 3080,Models may not have converged optimally,,88,1,0,0,0,0,316,2,2,2,0,6,1001,23,4,1,3,15,210,5,1,184,19,43,2362
+Baseline,mobilenet_v2,98.89,7.46,10.32,0.46,9.58,9.16,32,64,NVIDIA GeForce RTX 3080,Models may not have converged optimally,,89,0,0,0,0,0,320,0,0,2,0,1,1020,8,5,0,1,12,216,5,0,67,7,11,2524
+Baseline,mobilenet_v3_small,97.22,8.19,8.18,0.56,11.89,6.22,32,64,NVIDIA GeForce RTX 3080,Models may not have converged optimally,,89,0,0,0,0,0,317,1,2,2,1,6,1012,11,4,0,7,14,204,9,1,164,27,49,2368
+Baseline,mobilenet_v3_large,97.79,9.42,9.49,0.6,10.3,17.04,32,64,NVIDIA GeForce RTX 3080,Models may not have converged optimally,,89,0,0,0,0,0,316,0,1,5,0,3,1019,10,2,0,0,16,209,9,0,160,14,17,2418
+Baseline,densenet121,98.61,24.13,36.89,0.94,2.67,28.44,32,64,NVIDIA GeForce RTX 3080,Models may not have converged optimally,,89,0,0,0,0,0,314,0,0,8,0,4,1018,10,2,0,0,12,216,6,0,88,9,10,2502
+Baseline,shufflenet_v2_x0_5,97.15,8.16,8.12,0.6,11.96,1.53,32,64,NVIDIA GeForce RTX 3080,Models may not have converged optimally,,89,0,0,0,0,0,312,1,5,4,0,6,998,21,9,1,4,8,215,6,0,186,14,41,2368
+Baseline,vgg16,98.42,3.69,43.12,0.86,2.28,537.13,32,64,NVIDIA GeForce RTX 3080,Models may not have converged optimally,,89,0,0,0,0,0,320,0,0,2,0,1,1024,6,3,0,1,13,218,2,0,121,10,10,2468
+Baseline,squeezenet1_1,97.43,3.44,5.6,0.31,17.39,2.92,32,64,NVIDIA GeForce RTX 3080,Models may not have converged optimally,,89,0,0,0,0,0,311,3,7,1,0,5,1011,17,1,0,9,6,210,9,0,171,16,30,2392
+Baseline,resnet18,98,566.84,566.82,8.14,0.17,44.79,32,64,CPU,Models may not have converged optimally,,89,0,0,0,0,0,319,1,0,2,0,4,1015,12,3,1,2,10,217,4,0,122,12,41,2434
+Baseline,resnet34,98.4,990.36,990.25,23.64,0.1,85.29,32,64,CPU,Models may not have converged optimally,,89,0,0,0,0,0,315,1,0,6,0,0,1026,6,2,0,2,20,206,6,0,100,14,14,2481
+Baseline,resnet50,98.32,1899.27,1899.15,47.34,0.05,94.39,32,64,CPU,Models may not have converged optimally,,89,0,0,0,0,0,316,1,1,4,0,0,1019,10,5,1,2,12,212,7,0,107,13,17,2472
+Baseline,resnext50,98.55,2290.32,2290.17,56.64,0.04,92.33,32,64,CPU,Models may not have converged optimally,,89,0,0,0,0,0,319,1,0,2,0,1,1015,16,2,0,0,7,222,5,0,94,8,19,2488
+Baseline,mnasnet1,97.1,358.07,358.03,10.06,0.27,3.96,32,64,CPU,Models may not have converged optimally,,88,1,0,0,0,0,316,2,2,2,0,6,1001,23,4,1,3,15,210,5,1,184,19,43,2362
+Baseline,mobilenet_v2,98.89,802.19,802.07,18.56,0.12,9.16,32,64,CPU,Models may not have converged optimally,,89,0,0,0,0,0,320,0,0,2,0,1,1020,8,5,0,1,12,216,5,0,67,7,11,2524
+Baseline,mobilenet_v3_small,97.22,193.73,193.67,10.07,0.5,6.22,32,64,CPU,Models may not have converged optimally,,89,0,0,0,0,0,317,1,2,2,1,6,1012,11,4,0,7,14,204,9,1,164,27,49,2368
+Baseline,mobilenet_v3_large,97.79,554.66,554.55,10.43,0.18,17.03,32,64,CPU,Models may not have converged optimally,,89,0,0,0,0,0,316,0,1,5,0,3,1019,10,2,0,0,16,209,9,0,160,14,17,2418
+Baseline,densenet121,98.61,1938.24,1938.08,47.63,0.05,28.43,32,64,CPU,Models may not have converged optimally,,89,0,0,0,0,0,314,0,0,8,0,4,1018,10,2,0,0,12,216,6,0,88,9,10,2502
+Baseline,shufflenet_v2_x0_5,97.15,165.43,165.34,7.33,0.59,1.53,32,64,CPU,Models may not have converged optimally,,89,0,0,0,0,0,312,1,5,4,0,6,998,21,9,1,4,8,215,6,0,186,14,41,2368
+Baseline,vgg16,98.42,3469.13,3469.01,62.65,0.03,537.13,32,64,CPU,Models may not have converged optimally,,89,0,0,0,0,0,320,0,0,2,0,1,1024,6,3,0,1,13,218,2,0,121,10,10,2468
+Baseline,squeezenet1_1,97.43,311.16,311.11,23.87,0.31,2.92,32,64,CPU,Models may not have converged optimally,,89,0,0,0,0,0,311,3,7,1,0,5,1011,17,1,0,9,6,210,9,0,171,16,30,2392
+Baseline,resnet18,98,31.26,31.25,1.34,3.14,44.79,1,64,CPU,Models may not have converged optimally,,89,0,0,0,0,0,319,1,0,2,0,4,1015,12,3,1,2,10,217,4,0,122,12,41,2434
+Baseline,resnet34,98.4,54.13,54.08,1.3,1.82,85.29,1,64,CPU,Models may not have converged optimally,,89,0,0,0,0,0,315,1,0,6,0,0,1026,6,2,0,2,20,206,6,0,100,14,14,2481
+Baseline,resnet50,98.32,97.4,97.36,2.1,1.01,94.39,1,64,CPU,Models may not have converged optimally,,89,0,0,0,0,0,316,1,1,4,0,0,1019,10,5,1,2,12,212,7,0,107,13,17,2472
+Baseline,resnext50,98.55,113.65,113.63,2.48,0.87,92.33,1,64,CPU,Models may not have converged optimally,,89,0,0,0,0,0,319,1,0,2,0,1,1015,16,2,0,0,7,222,5,0,94,8,19,2488
+Baseline,mnasnet1,97.1,25,24.96,2.08,3.89,3.96,1,64,CPU,Models may not have converged optimally,,88,1,0,0,0,0,316,2,2,2,0,6,1001,23,4,1,3,15,210,5,1,184,19,43,2362
+Baseline,mobilenet_v2,98.89,51.62,51.61,1.45,1.92,9.16,1,64,CPU,Models may not have converged optimally,,89,0,0,0,0,0,320,0,0,2,0,1,1020,8,5,0,1,12,216,5,0,67,7,11,2524
+Baseline,mobilenet_v3_small,97.22,17.49,17.43,2.27,5.58,6.22,1,64,CPU,Models may not have converged optimally,,89,0,0,0,0,0,317,1,2,2,1,6,1012,11,4,0,7,14,204,9,1,164,27,49,2368
+Baseline,mobilenet_v3_large,97.79,33.05,33,1.95,2.96,17.03,1,64,CPU,Models may not have converged optimally,,89,0,0,0,0,0,316,0,1,5,0,3,1019,10,2,0,0,16,209,9,0,160,14,17,2418
+Baseline,densenet121,98.61,108.81,108.76,2.88,0.91,28.43,1,64,CPU,Models may not have converged optimally,,89,0,0,0,0,0,314,0,0,8,0,4,1018,10,2,0,0,12,216,6,0,88,9,10,2502
+Baseline,shufflenet_v2_x0_5,97.15,15.79,15.75,0.99,6.17,1.53,1,64,CPU,Models may not have converged optimally,,89,0,0,0,0,0,312,1,5,4,0,6,998,21,9,1,4,8,215,6,0,186,14,41,2368
+Baseline,vgg16,98.42,135.01,134.96,2.26,0.73,537.13,1,64,CPU,Models may not have converged optimally,,89,0,0,0,0,0,320,0,0,2,0,1,1024,6,3,0,1,13,218,2,0,121,10,10,2468
+Baseline,squeezenet1_1,97.43,18.16,18.17,0.88,5.36,2.92,1,64,CPU,Models may not have converged optimally,,89,0,0,0,0,0,311,3,7,1,0,5,1011,17,1,0,9,6,210,9,0,171,16,30,2392
+Static Quantization - min/max observer,mobilenet_v2_quantized,91.16,14.03,13.95,2,6.53,2.35,1,64,CPU,Models may not have converged optimally,,,,,,,,,,,,,,,,,,,,,,,,,,
+Static PTQ CPU,resnet18,97.96,5.56,5.51,0.52,17.79,11.3,1,64,CPU,Models may not have converged optimally,resnet18_q_scr.pth,89.0,0.0,0.0,0.0,0.0,0.0,318.0,1.0,1.0,2.0,0.0,3.0,1016.0,13.0,2.0,1.0,2.0,10.0,218.0,3.0,0.0,125.0,14.0,42.0,2428.0
+Static PTQ CPU,resnet34,98.3,10.57,10.54,0.76,9.32,21.51,1,64,CPU,Models may not have converged optimally,resnet34_q_scr.pth,89.0,0.0,0.0,0.0,0.0,0.0,318.0,1.0,0.0,3.0,0.0,0.0,1025.0,7.0,2.0,0.0,2.0,20.0,204.0,8.0,0.0,111.0,11.0,17.0,2470.0
+Static PTQ CPU,resnet50,98.18,17.68,17.62,3.81,5.57,24.03,1,64,CPU,Models may not have converged optimally,resnet50_q_scr.pth,89.0,0.0,0.0,0.0,0.0,0.0,317.0,1.0,0.0,4.0,0.0,2.0,1016.0,10.0,6.0,1.0,3.0,13.0,210.0,7.0,0.0,121.0,15.0,12.0,2461.0

@@ -1,0 +1,6 @@
+"Name","bit_width","_wandb","Results.macro avg.f1-score"
+"resnet18_Purple","32","","0.7270384376414137"
+"resnet18_Purple","16","","0.7270384376414137"
+"resnet18_Purple","8","","0.7186212915969962"
+"resnet18_Purple","6","","0.6837530254127729"
+"resnet18_Purple","4","","0.1826653944020356"

@@ -1,0 +1,26 @@
+epochs: 25
+classes: ["Basophil", "Eosinophil", "Lymphocyte", "Monocyte", "Neutrophil"]
+image_size: 224
+batch_size: 64
+save: "models"
+lr: 0.0000001 #0.0005
+architecture_list:
+#  - regnet_x_400mf
+#  - mobilenet_v2
+ - shufflenet_v2_x1_0
+#  - shufflenet_v2_x0_5
+#  - resnet18
+#  - resnet34
+#  - mobilenet_v3_small
+#  - MIMO
+# Quantizable models: https://github.com/pytorch/vision/tree/main/torchvision/models/quantization
+data_path: "Data"
+workers: 6
+device: "cuda"
+labels_indx: None
+rand_aug: {'n':3,'m':5}
+patience: 3
+load_stats: False
+mode: 'ptq' #'ptq', 'qat', 'fp32', 'prune'
+prune_amount: 0.1
+colours: ["Purple"]

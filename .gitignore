@@ -1,6 +1,22 @@
 
-Models/
+.vscode/
+
+__pycache__/
+
+data/
+
+models/
+
+resume/
+
+tensorboard/
 
 wandb/
 
-Data/
+yolov5/
+
+temp/
+
+.tmp.driveupload/
+
+multimodal/

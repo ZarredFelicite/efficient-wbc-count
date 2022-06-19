@@ -1,0 +1,6 @@
+"Name","bit_width","_wandb","Results.macro avg.f1-score"
+"mobilenet_v2_Purple","32","","0.7105714425067686"
+"mobilenet_v2_Purple","16","","0.7188325446752593"
+"mobilenet_v2_Purple","8","","0.5418263830898601"
+"mobilenet_v2_Purple","6","","0.1827100534239922"
+"mobilenet_v2_Purple","4","","0.1581945482219455"
