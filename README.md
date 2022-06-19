@@ -47,7 +47,7 @@ Analysis of different model performance show no benefit using large models like 
 
 **Explainability**
 By running class activation mapping (CAM) methods on a sample of our dataset, we are able to analyse what the network is "looking at". Below image shows a result of LayerCAM implemented with TorchCam, an open-source package available on GitHub. This provides a good sanity check that the model is learning to distinguish the morphological structures of the cells and not some other feature hidden to us.
-<img src="Media/saliency_vis.png" width="900" alt="saliency"/>
+<img src="media/saliency_vis.png" width="900" alt="saliency"/>
 WBC classified as Neutrophil with 99% confidence. (Image hue has been shifted)
 
 ## Quantization
